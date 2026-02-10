@@ -15,7 +15,7 @@ function Admin() {
     e.preventDefault();
 
     // simple fixed admin credentials
-    if (username === "admin" && password === "1234") {
+    if (username === "-----" && password === "-----") {
       localStorage.setItem("admin", "yes");
       alert("Admin Login Successful");
       window.location.reload();
