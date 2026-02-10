@@ -1,0 +1,16 @@
+.footer {
+  background: #003400;
+  color: white;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  max-width: 250px;
+}
+
+.footer-section h4 {
+  margin-bottom: 10px;
+}
