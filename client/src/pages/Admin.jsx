@@ -43,7 +43,6 @@ function Admin() {
 
       alert("Product deleted successfully");
 
-      // refresh list
       fetchProducts();
 
     } catch (error) {
@@ -87,7 +86,6 @@ function Admin() {
           <h3>{p.name}</h3>
 
           <p><b>Category:</b> {p.category}</p>
-
           <p><b>Price:</b> ₹{p.price}</p>
 
           <img
@@ -98,12 +96,10 @@ function Admin() {
 
           <br/><br/>
 
-          {/* EDIT BUTTON */}
           <Link to={`/admin/edit-product/${p._id}`}>
             <button style={{ marginRight: "10px" }}>Edit</button>
           </Link>
 
-          {/* DELETE BUTTON */}
           <button
             onClick={() => handleDelete(p._id)}
             style={{ background: "red", color: "white" }}
