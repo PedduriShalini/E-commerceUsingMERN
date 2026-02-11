@@ -19,15 +19,25 @@ function Login() {
     e.preventDefault();
 
     try {
-      await axios.post(
+
+      const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         user
       );
 
+      // logged in
       localStorage.setItem("isLoggedIn", "true");
 
-      alert("Login Successful");
-      navigate("/");
+      // admin check
+      if (res.data.role === "admin") {
+        localStorage.setItem("isAdmin", "true");
+        alert("Admin Login Successful");
+        navigate("/admin");
+      } else {
+        alert("User Login Successful");
+        navigate("/");
+      }
+
     } catch (err) {
       alert("Invalid credentials");
     }
@@ -36,10 +46,26 @@ function Login() {
   return (
     <div style={{padding:"40px"}}>
       <h2>Login</h2>
+
       <form onSubmit={handleSubmit}>
-        <input name="email" placeholder="Email" onChange={handleChange} /><br/><br/>
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} /><br/><br/>
+
+        <input
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          required
+        /><br/><br/>
+
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+          required
+        /><br/><br/>
+
         <button>Login</button>
+
       </form>
     </div>
   );

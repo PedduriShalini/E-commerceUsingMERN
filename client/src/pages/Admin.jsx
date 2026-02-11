@@ -1,86 +1,119 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 function Admin() {
 
-  // store login input
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
 
-  // check if admin already logged in
-  const isAdmin = localStorage.getItem("admin");
+  // -------- ADMIN PROTECTION --------
+  useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin");
 
-  // when login button clicked
-  const handleLogin = (e) => {
-    e.preventDefault();
+    if (!isAdmin) {
+      alert("You are not authorized. Please login as admin.");
+      navigate("/login");
+    }
+  }, [navigate]);
 
-    // simple fixed admin credentials
-    if (username === "admin" && password === "1234") {
-      localStorage.setItem("admin", "yes");
-      alert("Admin Login Successful");
-      window.location.reload();
-    } else {
-      alert("Wrong username or password");
+  // -------- FETCH PRODUCTS --------
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/products");
+      setProducts(res.data);
+    } catch (error) {
+      console.log("Error loading products");
     }
   };
 
-  // logout
-  const handleLogout = () => {
-    localStorage.removeItem("admin");
-    window.location.reload();
+  // -------- DELETE PRODUCT --------
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/products/delete/${id}`);
+
+      alert("Product deleted successfully");
+
+      // refresh list
+      fetchProducts();
+
+    } catch (error) {
+      alert("Delete failed");
+    }
   };
 
-  // ----------------------
-  // IF ADMIN NOT LOGGED IN
-  // ----------------------
-  if (!isAdmin) {
-    return (
-      <div style={{ padding: "40px" }}>
-        <h2>Admin Login</h2>
-
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <br /><br />
-
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <br /><br />
-
-          <button>Login</button>
-        </form>
-      </div>
-    );
-  }
-
-  // ----------------------
-  // IF ADMIN LOGGED IN
-  // ----------------------
   return (
     <div style={{ padding: "40px" }}>
-      <h2>Admin Dashboard</h2>
 
-      <br />
+      <h2>Admin Panel</h2>
 
-      <Link to="/admin/add-product">
-        <button>Add Product</button>
-      </Link>
+      <br/>
 
-      <br /><br />
+      {/* ADD BUTTONS */}
+      <div style={{ marginBottom: "20px" }}>
+        <Link to="/admin/add-product">
+          <button>Add Product</button>
+        </Link>
 
-      <Link to="/admin/add-category">
-        <button>Add Category</button>
-      </Link>
+        <Link to="/admin/add-category" style={{ marginLeft: "15px" }}>
+          <button>Add Category</button>
+        </Link>
+      </div>
 
-      <br /><br />
+      <hr/>
 
-      <button onClick={handleLogout}>Logout</button>
+      {/* PRODUCT LIST */}
+      {products.map((p) => (
+        <div
+          key={p._id}
+          style={{
+            border: "1px solid gray",
+            padding: "15px",
+            margin: "15px 0",
+            borderRadius: "8px",
+            background: "#f9f9f9"
+          }}
+        >
+
+          <h3>{p.name}</h3>
+
+          <p><b>Category:</b> {p.category}</p>
+
+          <p><b>Price:</b> ₹{p.price}</p>
+
+          <img
+            src={p.image}
+            alt={p.name}
+            style={{ width: "120px", height: "120px", objectFit: "contain" }}
+          />
+
+          <br/><br/>
+
+          {/* EDIT BUTTON */}
+          <Link to={`/admin/edit-product/${p._id}`}>
+            <button style={{ marginRight: "10px" }}>Edit</button>
+          </Link>
+
+          {/* DELETE BUTTON */}
+          <button
+            onClick={() => handleDelete(p._id)}
+            style={{ background: "red", color: "white" }}
+          >
+            Delete
+          </button>
+
+        </div>
+      ))}
+
     </div>
   );
 }

@@ -9,7 +9,8 @@ function TopBar() {
 
   // logout function
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+localStorage.removeItem("isLoggedIn");
+localStorage.removeItem("isAdmin");
     alert("Logged out successfully");
     navigate("/login");
   };

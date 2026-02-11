@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-function AddProduct() {
+function EditProduct() {
 
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState({
@@ -13,6 +14,15 @@ function AddProduct() {
     price: ""
   });
 
+  // load product
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/products")
+      .then(res => {
+        const found = res.data.find(p => p._id === id);
+        if(found) setProduct(found);
+      });
+  }, [id]);
+
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
@@ -20,29 +30,25 @@ function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/products/add",
-        product
-      );
+    await axios.put(
+      `http://localhost:5000/api/products/update/${id}`,
+      product
+    );
 
-      alert("Product Added Successfully");
-      navigate("/admin");
-
-    } catch (error) {
-      alert("Failed to add product");
-    }
+    alert("Product Updated Successfully");
+    navigate("/admin");
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>Add Product</h2>
+    <div style={{padding:"40px"}}>
+      <h2>Edit Product</h2>
 
       <form onSubmit={handleSubmit}>
 
         <input
           name="name"
           placeholder="Product Name"
+          value={product.name}
           onChange={handleChange}
           required
         /><br/><br/>
@@ -50,13 +56,15 @@ function AddProduct() {
         <input
           name="category"
           placeholder="Category"
+          value={product.category}
           onChange={handleChange}
           required
         /><br/><br/>
 
         <input
           name="image"
-          placeholder="Image URL (example: /images/apple.jpg)"
+          placeholder="Image URL"
+          value={product.image}
           onChange={handleChange}
           required
         /><br/><br/>
@@ -65,15 +73,16 @@ function AddProduct() {
           type="number"
           name="price"
           placeholder="Price"
+          value={product.price}
           onChange={handleChange}
           required
         /><br/><br/>
 
-        <button>Add Product</button>
+        <button>Update Product</button>
 
       </form>
     </div>
   );
 }
 
-export default AddProduct;
+export default EditProduct;

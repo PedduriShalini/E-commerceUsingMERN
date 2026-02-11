@@ -11,24 +11,25 @@ import Cart from "./components/Cart";
 import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
 
+// PAGES
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
 import AddCategory from "./pages/AddCategory";
 import AddProduct from "./pages/AddProduct";
-
+import EditProduct from "./pages/EditProduct";
 
 import "./App.css";
 
 function App() {
 
-  // category selection
+  // ---------- CATEGORY FILTER ----------
   const [selectedCategory, setSelectedCategory] = useState("ALL");
 
-  // products from MongoDB
+  // ---------- PRODUCTS FROM DATABASE ----------
   const [products, setProducts] = useState([]);
 
-  // fetch products from backend
+  // FETCH PRODUCTS FROM BACKEND
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -42,7 +43,7 @@ function App() {
     fetchProducts();
   }, []);
 
-  // filter by category
+  // ---------- FILTER PRODUCTS ----------
   const filteredProducts =
     selectedCategory === "ALL"
       ? products
@@ -54,7 +55,7 @@ function App() {
 
   return (
     <>
-      {/* Always visible */}
+      {/* ALWAYS VISIBLE */}
       <TopBar />
       <NavBar />
 
@@ -66,29 +67,28 @@ function App() {
           element={
             <>
               <Offer />
-
-              {/* category buttons */}
               <Categories onCategoryClick={setSelectedCategory} />
-
-              {/* products from DB */}
               <CategoryProducts products={filteredProducts} />
-
               <Testimonials />
               <Footer />
             </>
           }
         />
 
-        {/* CART PAGE */}
+        {/* CART */}
         <Route path="/cart" element={<Cart />} />
 
-        {/* LOGIN / SIGNUP */}
+        {/* AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/add-category" element={<AddCategory />} />
-        <Route path="/admin/add-product" element={<AddProduct />} />
 
+        {/* ADMIN PANEL */}
+        <Route path="/admin" element={<Admin />} />
+
+        {/* ADMIN FEATURES */}
+        <Route path="/admin/add-product" element={<AddProduct />} />
+        <Route path="/admin/edit-product/:id" element={<EditProduct />} />
+        <Route path="/admin/add-category" element={<AddCategory />} />
 
       </Routes>
     </>
